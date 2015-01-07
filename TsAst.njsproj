@@ -33,9 +33,6 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <TypeScriptCompile Include="typescriptServices.d.ts">
-      <Publish>False</Publish>
-    </TypeScriptCompile>
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="node.d.ts" />
     <Content Include="package.json" />
@@ -45,11 +42,6 @@
     <Folder Include="Scripts\" />
     <Folder Include="Scripts\typings\" />
     <Folder Include="Scripts\typings\node\" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="typescriptServices.js">
-      <Publish>True</Publish>
-    </Content>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsTools.targets" />
   <ProjectExtensions>
