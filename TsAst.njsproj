@@ -5,7 +5,7 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>TsAst</Name>
     <RootNamespace>TsAst</RootNamespace>
-    <ScriptArguments>C:\Projects\TypeScript\built\local\tsc.js --module commonjs --sourcemap --target ES5 --locale en-US COMPUTE_PATHS_ONLY "C:\Projects\TsAst\app.ts" "C:\Projects\TsAst\node.d.ts"</ScriptArguments>
+    <ScriptArguments>app.js</ScriptArguments>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -83,4 +83,7 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+    <TypeScriptNoImplicitAny>True</TypeScriptNoImplicitAny>
+  </PropertyGroup>
 </Project>
