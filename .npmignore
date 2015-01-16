@@ -1,0 +1,10 @@
+.npmignore
+*.suo
+obj
+bin
+*.ide
+*.dat
+*.log
+node.d.ts
+*.njsproj
+*.sln

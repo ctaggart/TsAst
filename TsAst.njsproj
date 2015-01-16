@@ -36,6 +36,8 @@
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="node.d.ts" />
+    <Content Include=".gitignore" />
+    <Content Include=".npmignore" />
     <Content Include="package.json" />
     <Content Include="README.md" />
   </ItemGroup>

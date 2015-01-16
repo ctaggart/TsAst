@@ -1,6 +1,6 @@
 {
-  "name": "TsAst",
+  "name": "tsast",
   "version": "0.0.0",
-  "description": "TsAst",
+  "description": "TypeScript AST from Node.js",
   "main": "app.js"
 }

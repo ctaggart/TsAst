@@ -40,20 +40,13 @@ function defaultFormatCodeOptions(): ts.FormatCodeOptions {
 
 // derived from https://github.com/Microsoft/TypeScript/wiki/Using-the-Compiler-API
 function inMemoryLanguageService(files: SourceFileVersion[]): ts.LanguageService {
+    function getFile(filename: string) {
+        return ts.forEach(files, f => f.filename === filename ? f : undefined);
+    }
     var host: ts.LanguageServiceHost = {
         getScriptFileNames: () => files.map(f => f.filename),
-        getScriptVersion: (filename) => ts.forEach(files,
-            f => f.filename === filename ? f.version.toString() : undefined),
-        getScriptSnapshot: (filename) => {
-            var file = ts.forEach(files, f => f.filename === filename ? f : undefined);
-            var readText = () => file.text
-            return {
-                getText: (start, end) => readText().substring(start, end),
-                getLength: () => readText().length,
-                getLineStartPositions: () => [],
-                getChangeRange: oldSnapshot => undefined
-            };
-        },
+        getScriptVersion: filename => getFile(filename).version.toString(),
+        getScriptSnapshot: filename => ts.ScriptSnapshot.fromString(getFile(filename).text),
         // TODO do something else with the log messages
         log: message => undefined, //console.log('log: ' + message),
         trace: message => undefined, //console.log('trace: ' + message),
@@ -61,8 +54,6 @@ function inMemoryLanguageService(files: SourceFileVersion[]): ts.LanguageService
         getCurrentDirectory: () => '',
         getScriptIsOpen: () => true,
         getDefaultLibFilename: () => "lib.d.ts",
-        getLocalizedDiagnosticMessages: () => undefined,
-        getCancellationToken: () => undefined,
         getCompilationSettings: () => { return {}; },
     };
     return ts.createLanguageService(host, ts.createDocumentRegistry())
