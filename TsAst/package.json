@@ -2,5 +2,5 @@
   "name": "tsast",
   "version": "0.0.0",
   "description": "TypeScript AST from Node.js",
-  "main": "app.js"
+  "main": "tsast.js"
 }
