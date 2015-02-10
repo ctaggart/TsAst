@@ -1,4 +1,4 @@
-﻿///<reference path='../TypeScript/built/local/typescript.d.ts' />
+﻿///<reference path='../TypeScript/bin/typescript.d.ts' />
 ///<reference path='node.d.ts' />
 
 import ts = require('typescript');
@@ -12,7 +12,6 @@ function getAllInterfaces(root: ts.Node) {
     return result;
 
     function aggregate(node: ts.Node): void {
-        console.log('node: ' + (ts.tokenToString(node.kind)));
         if (node.kind === ts.SyntaxKind.InterfaceDeclaration) {
             result.push(<ts.InterfaceDeclaration>node);
         }
@@ -21,18 +20,15 @@ function getAllInterfaces(root: ts.Node) {
 }
 
 export function main() {
-    var filename = process.cwd() + '/../TypeScript/built/local/typescript.d.ts'
+    var filename = process.cwd() + '/../TypeScript/bin/typescript.d.ts'
     var source = String(fs.readFileSync(filename));
-    //console.log("source: " + source);
 
-    var scanner = ts.createScanner(ScriptTarget.Latest, true, source);
-    var root = ts.createNode(scanner.scan());
+    var sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, "0");
 
-    getAllInterfaces(root).forEach(ifd => {
-        console.log('interface: ' + ifd.name);
-    });
-
-    console.log('done');
+    getAllInterfaces(sf)
+        .map(ifd => ifd.name.text)
+        .sort()
+        .forEach(nm => console.log(nm));
 }
 
 main();

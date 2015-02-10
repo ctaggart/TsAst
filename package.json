@@ -2,5 +2,8 @@
   "name": "TsAst",
   "version": "0.0.0",
   "description": "TsAst",
-  "main": "app.js"
+  "main": "app.js",
+  "dependencies": {
+    "typescript": "^1.4.1"
+  }
 }
