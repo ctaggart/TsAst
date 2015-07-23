@@ -23,7 +23,7 @@ export function main() {
     var filename = process.cwd() + '/../TypeScript/bin/typescript.d.ts'
     var source = String(fs.readFileSync(filename));
 
-    var sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, "0");
+    var sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest);
 
     getAllInterfaces(sf)
         .map(ifd => ifd.name.text)
