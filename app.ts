@@ -1,4 +1,4 @@
-﻿///<reference path='../TypeScript/bin/typescript.d.ts' />
+﻿///<reference path='node_modules/typescript/lib/typescript.d.ts' />
 ///<reference path='node.d.ts' />
 
 import ts = require('typescript');
@@ -20,7 +20,7 @@ function getAllInterfaces(root: ts.Node) {
 }
 
 export function main() {
-    var filename = process.cwd() + '/../TypeScript/bin/typescript.d.ts'
+    var filename = process.cwd() + '/node_modules/typescript/lib/typescript.d.ts'
     var source = String(fs.readFileSync(filename));
 
     var sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest);
