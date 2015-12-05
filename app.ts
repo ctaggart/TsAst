@@ -17,7 +17,7 @@ import * as path from "path";
 
 export function main() {
     let source = "var a=function(v:number){return 0+1+2+3;}";
-    let sourceFile = ts.createSourceFile("file.ts", source, ts.ScriptTarget.Latest, true);
+    let sourceFile = ts.createSourceFile("file.ts", source, ts.ScriptTarget.ES6, true);
 
     // It would be nice if I could create it from scratch.
     //let sourceFile = <ts.SourceFile>ts.createNode(ts.SyntaxKind.SourceFile);
@@ -71,18 +71,24 @@ export function main() {
         getExternalModuleFileFromDeclaration(declaration: ts.ImportEqualsDeclaration | ts.ImportDeclaration | ts.ExportDeclaration) { return undefined; }
     }
 
+    const options: ts.CompilerOptions = {
+        module: ts.ModuleKind.ES6,
+        target: ts.ScriptTarget.ES6,
+        emitBOM: false
+    };
+
     let host: ts.EmitHost = {
-        getCompilerOptions() { return undefined; },
+        getCompilerOptions() { return options; },
         getSourceFile(fileName: string) { return undefined; },
         getCurrentDirectory() { return undefined; },
         getSourceFiles() { return []; },
         getCommonSourceDirectory() { return undefined; },
         getCanonicalFileName(fileName: string) { return undefined; },
-        getNewLine() { return undefined; },
+        getNewLine() { return '\n'; },
         isEmitBlocked(emitFileName: string) { return false; },
         writeFile(fileName: string, data: string, writeByteOrderMark: boolean, onError?: (message: string) => void) {
-            console.log('fileName:' + fileName);
-            console.log('data:' + data);
+            console.log('fileName: ' + fileName);
+            console.log('data: ' + data);
         }
     }
 
