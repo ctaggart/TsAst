@@ -18,6 +18,7 @@ import * as path from "path";
 export function main() {
     let source = "var a=function(v:number){return 0+1+2+3;}";
     let sourceFile = ts.createSourceFile("file.ts", source, ts.ScriptTarget.ES6, true);
+    (<any>sourceFile).externalModuleIndicator = sourceFile.statements[0];
 
     // It would be nice if I could create it from scratch.
     //let sourceFile = <ts.SourceFile>ts.createNode(ts.SyntaxKind.SourceFile);
@@ -55,7 +56,7 @@ export function main() {
         isReferencedAliasDeclaration(node: ts.Node, checkChildren?: boolean) { return false; },
         isTopLevelValueImportEqualsWithEntityName(node: ts.ImportEqualsDeclaration) { return false; },
         getNodeCheckFlags(node: ts.Node) { return undefined; },
-        isDeclarationVisible(node: ts.Declaration) { return false; },
+        isDeclarationVisible(node: ts.Declaration) { return true; },
         collectLinkedAliases(node: ts.Identifier) { return []; },
         isImplementationOfOverload(node: ts.FunctionLikeDeclaration) { return false; },
         writeTypeOfDeclaration(declaration: ts.AccessorDeclaration | ts.VariableLikeDeclaration, enclosingDeclaration: ts.Node, flags: ts.TypeFormatFlags, writer: ts.SymbolWriter) { },
@@ -92,7 +93,11 @@ export function main() {
         }
     }
 
-    let emitResult = ts.emitFiles(resolver, host, sourceFile);
+    //let emitResult = ts.emitFiles(resolver, host, sourceFile);
+    //console.log(emitResult);
+
+    const diagnostics = ts.createDiagnosticCollection();
+    let emitResult = ts.emitDeclarations(host, resolver, diagnostics, "file.ts", [sourceFile], false)
     console.log(emitResult);
 }
 
