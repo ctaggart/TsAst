@@ -6,7 +6,7 @@ import fs = require('fs');
 import path = require('path');
 
 function printChildTypes(root: ts.Node) {
-    ts.forEachChild(root, n => console.log(n.kind + ' ' + ts.SyntaxKind[n.kind]));
+    ts.forEachChild(root, n => console.log(n.kind + ' ' + (<any>ts).SyntaxKind[n.kind]));
 }
 
 interface IsKind { (kind: ts.SyntaxKind): boolean }
@@ -68,6 +68,31 @@ function isKindLiteralToken(kind: ts.SyntaxKind) {
     return ts.SyntaxKind.FirstLiteralToken <= kind && kind <= ts.SyntaxKind.LastLiteralToken
 }
 
+function isKindHeritageClause(kind: ts.SyntaxKind) {
+  return kind === ts.SyntaxKind.HeritageClause;
+}
+
+function isKindPropertySignature(kind: ts.SyntaxKind) {
+  return kind === ts.SyntaxKind.PropertySignature;
+}
+
+function isKindTypeReference(kind: ts.SyntaxKind) {
+  return kind === ts.SyntaxKind.TypeReference;
+}
+
+function isKindExpressionWithTypeArguments(kind: ts.SyntaxKind) {
+  return kind === ts.SyntaxKind.ExpressionWithTypeArguments;
+}
+
+function isKindQuestionToken(kind: ts.SyntaxKind) {
+    return kind === ts.SyntaxKind.QuestionToken;
+}
+
+function isKindTypeParameter(kind: ts.SyntaxKind) {
+    return kind === ts.SyntaxKind.TypeParameter;
+}
+
+
 
 function getModulesDeclarations(roots: ts.Node[]) {
     return getAll<ts.ModuleDeclaration>(isKindModuleDeclaration, roots);
@@ -101,6 +126,26 @@ function getLiteralTokens(roots: ts.Node[]) {
     return getAll<ts.LiteralExpression>(isKindLiteralToken, roots);
 }
 
+function getHeritageClauses(roots: ts.Node[]) {
+  return getAll<ts.HeritageClause>(isKindHeritageClause, roots);
+}
+
+function getExpressionWithTypeArguments(roots: ts.Node[]) {
+  return getAll<ts.ExpressionWithTypeArguments>(isKindExpressionWithTypeArguments, roots);
+}
+
+function getTypeReferences(roots: ts.Node[]) {
+    return getAll<ts.TypeReferenceNode>(isKindTypeReference, roots);
+}
+
+function getIdentifiers(roots: ts.Node[]) {
+    return getAll<ts.Identifier>(isKindIdentifier, roots);
+}
+
+function getTypeParameters(roots: ts.Node[]) {
+    return getAll<ts.TypeParameterDeclaration>(isKindTypeParameter, roots);
+}
+
 
 // type guards
 
@@ -112,9 +157,26 @@ function isLiteralToken(node: ts.Node): node is ts.LiteralExpression {
     return isKindLiteralToken(node.kind);
 }
 
+function isHeritageClause(node: ts.Node): node is ts.HeritageClause {
+  return isKindHeritageClause(node.kind);
+}
+
+function isPropertySignature(node: ts.Node): node is ts.VariableLikeDeclaration {
+  return isKindPropertySignature(node.kind);
+}
+
+function isTypeReference(node: ts.Node): node is ts.TypeReferenceNode {
+  return isKindTypeReference(node.kind);
+}
+
+function isExpressionWithTypeArguments(node: ts.Node): node is ts.ExpressionWithTypeArguments {
+  return isKindExpressionWithTypeArguments(node.kind);
+}
+
+
 
 export function main() {
-    const filename = process.cwd() + '/node_modules/typescript/lib/typescriptServices.d.ts'
+    const filename = process.cwd() + '/node_modules/typescript/lib/typescriptServices2.d.ts'
     const source = String(fs.readFileSync(filename));
 
     const sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest);
@@ -139,7 +201,7 @@ export function main() {
         ems.forEach(em => {
             const name = em.name;
             if (isIdentifier(name))
-                console.error('  ' + name.text);
+                console.log('  ' + name.text);
             const ts = getLiteralTokens([em]);
             ts.forEach(t => {
                 console.log('    = ' + t.text);
@@ -149,7 +211,31 @@ export function main() {
 
     console.log('\n# Interfaces');
     let ids = getInterfaceDeclarations(mbs);
-    ids.map(id => console.log(id.name.text));
+    ids.map(id => {
+        console.log(id.name.text);
+        const tps = getTypeParameters([id]);
+        tps.forEach(tp => {
+            console.log('  of ' + tp.name.text);
+        });
+
+        const hcs = getHeritageClauses([id]);
+        const ewtas = getExpressionWithTypeArguments(hcs);
+        ewtas.forEach(ewta => {
+            const ids = getIdentifiers([ewta]);
+            ids.forEach(id => {
+                console.log('  extends: ' + id.text);
+            });
+            //const qts = getQuestionTokens([ewta]);
+            const trs = getTypeReferences([ewta]);
+            trs.forEach(tr => {
+                const ids = getIdentifiers([tr]);
+                ids.forEach(id => {
+                    console.log('    of ' + id.text);
+                });
+            });
+        });
+
+    });
 
 
     //printChildTypes(sf);
