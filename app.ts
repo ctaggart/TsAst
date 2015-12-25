@@ -92,6 +92,22 @@ function isKindTypeParameter(kind: ts.SyntaxKind) {
     return kind === ts.SyntaxKind.TypeParameter;
 }
 
+function isKindVariableStatement(kind: ts.SyntaxKind) {
+    return kind === ts.SyntaxKind.VariableStatement;
+}
+
+function isKindVariableDeclarationList(kind: ts.SyntaxKind) {
+    return kind === ts.SyntaxKind.VariableDeclarationList;
+}
+
+function isKindVariableDeclaration(kind: ts.SyntaxKind) {
+    return kind === ts.SyntaxKind.VariableDeclaration;
+}
+
+function isKindKeyword(kind: ts.SyntaxKind) {
+    return ts.SyntaxKind.FirstKeyword <= kind && kind <= ts.SyntaxKind.LastKeyword
+}
+
 
 
 function getModulesDeclarations(roots: ts.Node[]) {
@@ -146,6 +162,23 @@ function getTypeParameters(roots: ts.Node[]) {
     return getAll<ts.TypeParameterDeclaration>(isKindTypeParameter, roots);
 }
 
+function getVariableStatements(roots: ts.Node[]) {
+    return getAll<ts.VariableStatement>(isKindVariableStatement, roots);
+}
+
+function getVariableDeclarationLists(roots: ts.Node[]) {
+    return getAll<ts.VariableDeclarationList>(isKindVariableDeclarationList, roots);
+}
+
+function getVariableDeclarations(roots: ts.Node[]) {
+    return getAll<ts.VariableDeclaration>(isKindVariableDeclaration, roots);
+}
+
+function getKeywords(roots: ts.Node[]) {
+    return getAll<ts.LiteralExpression>(isKindKeyword, roots);
+}
+
+
 
 // type guards
 
@@ -173,10 +206,26 @@ function isExpressionWithTypeArguments(node: ts.Node): node is ts.ExpressionWith
   return isKindExpressionWithTypeArguments(node.kind);
 }
 
+function isVariableStatement(node: ts.Node): node is ts.VariableStatement {
+    return isKindVariableStatement(node.kind);
+}
+
+function isVariableDeclaration(node: ts.Node): node is ts.VariableDeclaration {
+    return isKindVariableDeclaration(node.kind);
+}
+
+function isVariableDeclarationList(node: ts.Node): node is ts.VariableDeclarationList {
+    return isKindVariableDeclarationList(node.kind);
+}
+
+function isKeyword(node: ts.Node): node is ts.LiteralExpression {
+    return isKindKeyword(node.kind);
+}
+
 
 
 export function main() {
-    const filename = process.cwd() + '/node_modules/typescript/lib/typescriptServices2.d.ts'
+    const filename = process.cwd() + '/node_modules/typescript/lib/typescriptServices.d.ts'
     const source = String(fs.readFileSync(filename));
 
     const sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest);
@@ -196,7 +245,7 @@ export function main() {
     console.log('\n# Enums');
     const eds = getEnumDeclarations(mbs);
     eds.map(ed => {
-        console.log(ed.name.text)
+        console.log(ed.name.text);
         const ems = getEnumMembers([ed]);
         ems.forEach(em => {
             const name = em.name;
@@ -221,25 +270,50 @@ export function main() {
         const hcs = getHeritageClauses([id]);
         const ewtas = getExpressionWithTypeArguments(hcs);
         ewtas.forEach(ewta => {
-            const ids = getIdentifiers([ewta]);
-            ids.forEach(id => {
-                console.log('  extends: ' + id.text);
-            });
-            //const qts = getQuestionTokens([ewta]);
-            const trs = getTypeReferences([ewta]);
-            trs.forEach(tr => {
-                const ids = getIdentifiers([tr]);
-                ids.forEach(id => {
-                    console.log('    of ' + id.text);
-                });
-            });
+            printIdentifiers([ewta], '  ');
+            printTypeReferences([ewta], '    ');
         });
-
     });
 
+    console.log('\n# Variables');
+    const vbs = getVariableStatements(mbs);
+    const vdls = getVariableDeclarationLists(vbs);
+    const vds = getVariableDeclarations(vdls);
+    vds.map(vd => {
+        printIdentifiers([vd], '');
+        printTypeReferences([vd], '  ');
+        printKeywords([vd], '  '); // if simple types like string, bool
+    });
 
     //printChildTypes(sf);
     console.log('done');
+}
+
+function printIdentifiers(nodes: ts.Node[], indent: string) {
+    const ids = getIdentifiers(nodes);
+    ids.forEach(id => console.log(indent + id.text));
+}
+
+function printTypeReferences(nodes: ts.Node[], indent: string) {
+    const trs = getTypeReferences(nodes);
+    trs.forEach(tr => printIdentifiers(trs, indent));
+}
+
+function printKeywords(nodes: ts.Node[], indent: string) {
+    const kws = getKeywords(nodes);
+    kws.forEach(kw => {
+        switch (kw.kind) {
+            case ts.SyntaxKind.BooleanKeyword:
+                console.log(indent + 'boolean');
+                break;
+            case ts.SyntaxKind.StringKeyword:
+                console.log(indent + 'string');
+                break;
+            default:
+                console.log(indent + (<any>ts).SyntaxKind[kw.kind]);
+        }
+        
+    });
 }
 
 main();
