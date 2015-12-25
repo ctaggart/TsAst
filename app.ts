@@ -11,7 +11,7 @@ function printChildTypes(root: ts.Node) {
 
 interface IsKind { (kind: ts.SyntaxKind): boolean }
 
-function getAll<T extends ts.Node>(isKind: IsKind, roots: ts.Node[]) {
+function getKind<T extends ts.Node>(isKind: IsKind, roots: ts.Node[]) {
     const result: T[] = [];
     roots.forEach(root => {
         ts.forEachChild(root, node => {
@@ -22,7 +22,20 @@ function getAll<T extends ts.Node>(isKind: IsKind, roots: ts.Node[]) {
     return result;
 }
 
-function getAllRecurse<T extends ts.Node>(isKind: IsKind, roots: ts.Node[]) {
+function hasKind<T extends ts.Node>(isKind: IsKind, roots: ts.Node[]): boolean {
+    let result = false;
+    roots.forEach(root => {
+        ts.forEachChild(root, node => {
+            if (isKind(node.kind)) {
+                result = true;
+                return;
+            }
+        });
+    });
+    return result;
+}
+
+function getKindRecurse<T extends ts.Node>(isKind: IsKind, roots: ts.Node[]) {
     const result: T[] = [];
     roots.forEach(root => aggregate(root));
     return result;
@@ -34,6 +47,7 @@ function getAllRecurse<T extends ts.Node>(isKind: IsKind, roots: ts.Node[]) {
         ts.forEachChild(node, aggregate);
     }
 }
+
 
 
 function isKindModuleDeclaration(kind: ts.SyntaxKind) {
@@ -108,76 +122,87 @@ function isKindKeyword(kind: ts.SyntaxKind) {
     return ts.SyntaxKind.FirstKeyword <= kind && kind <= ts.SyntaxKind.LastKeyword
 }
 
+function isKindParameter(kind: ts.SyntaxKind) {
+    return kind === ts.SyntaxKind.Parameter;
+}
+
 
 
 function getModulesDeclarations(roots: ts.Node[]) {
-    return getAll<ts.ModuleDeclaration>(isKindModuleDeclaration, roots);
+    return getKind<ts.ModuleDeclaration>(isKindModuleDeclaration, roots);
 }
 
 function getModuleBlocks(roots: ts.Node[]) {
-    return getAll<ts.ModuleBlock>(isKindModuleBlock, roots);
+    return getKind<ts.ModuleBlock>(isKindModuleBlock, roots);
 }
 
 function getInterfaceDeclarations(roots: ts.Node[]) {
-    return getAll<ts.InterfaceDeclaration>(isKindInterfaceDeclaration, roots);
+    return getKind<ts.InterfaceDeclaration>(isKindInterfaceDeclaration, roots);
 }
     
 function getInterfaceDeclarationsRecurse(roots: ts.Node[]) {
-    return getAllRecurse<ts.InterfaceDeclaration>(isKindInterfaceDeclaration, roots);
+    return getKindRecurse<ts.InterfaceDeclaration>(isKindInterfaceDeclaration, roots);
 }
 
 function getEnumDeclarations(roots: ts.Node[]) {
-    return getAll<ts.EnumDeclaration>(isKindEnumDeclaration, roots);
+    return getKind<ts.EnumDeclaration>(isKindEnumDeclaration, roots);
 }
 
 function getEnumMembers(roots: ts.Node[]) {
-    return getAll<ts.EnumMember>(isKindEnumMember, roots);
+    return getKind<ts.EnumMember>(isKindEnumMember, roots);
 }
 
 function getFunctionDeclarations(roots: ts.Node[]) {
-    return getAll<ts.FunctionDeclaration>(isKindFunctionDeclaration, roots);
+    return getKind<ts.FunctionDeclaration>(isKindFunctionDeclaration, roots);
 }
 
 function getLiteralTokens(roots: ts.Node[]) {
-    return getAll<ts.LiteralExpression>(isKindLiteralToken, roots);
+    return getKind<ts.LiteralExpression>(isKindLiteralToken, roots);
 }
 
 function getHeritageClauses(roots: ts.Node[]) {
-  return getAll<ts.HeritageClause>(isKindHeritageClause, roots);
+  return getKind<ts.HeritageClause>(isKindHeritageClause, roots);
 }
 
 function getExpressionWithTypeArguments(roots: ts.Node[]) {
-  return getAll<ts.ExpressionWithTypeArguments>(isKindExpressionWithTypeArguments, roots);
+  return getKind<ts.ExpressionWithTypeArguments>(isKindExpressionWithTypeArguments, roots);
 }
 
 function getTypeReferences(roots: ts.Node[]) {
-    return getAll<ts.TypeReferenceNode>(isKindTypeReference, roots);
+    return getKind<ts.TypeReferenceNode>(isKindTypeReference, roots);
 }
 
 function getIdentifiers(roots: ts.Node[]) {
-    return getAll<ts.Identifier>(isKindIdentifier, roots);
+    return getKind<ts.Identifier>(isKindIdentifier, roots);
 }
 
 function getTypeParameters(roots: ts.Node[]) {
-    return getAll<ts.TypeParameterDeclaration>(isKindTypeParameter, roots);
+    return getKind<ts.TypeParameterDeclaration>(isKindTypeParameter, roots);
 }
 
 function getVariableStatements(roots: ts.Node[]) {
-    return getAll<ts.VariableStatement>(isKindVariableStatement, roots);
+    return getKind<ts.VariableStatement>(isKindVariableStatement, roots);
 }
 
 function getVariableDeclarationLists(roots: ts.Node[]) {
-    return getAll<ts.VariableDeclarationList>(isKindVariableDeclarationList, roots);
+    return getKind<ts.VariableDeclarationList>(isKindVariableDeclarationList, roots);
 }
 
 function getVariableDeclarations(roots: ts.Node[]) {
-    return getAll<ts.VariableDeclaration>(isKindVariableDeclaration, roots);
+    return getKind<ts.VariableDeclaration>(isKindVariableDeclaration, roots);
 }
 
 function getKeywords(roots: ts.Node[]) {
-    return getAll<ts.LiteralExpression>(isKindKeyword, roots);
+    return getKind<ts.LiteralExpression>(isKindKeyword, roots);
 }
 
+function getParameters(roots: ts.Node[]) {
+    return getKind<ts.ParameterDeclaration>(isKindParameter, roots);
+}
+
+function hasQuestionToken(roots: ts.Node[]) {
+    return hasKind(isKindQuestionToken, roots);
+}
 
 
 // type guards
@@ -222,10 +247,14 @@ function isKeyword(node: ts.Node): node is ts.LiteralExpression {
     return isKindKeyword(node.kind);
 }
 
+function isParameter(node: ts.Node): node is ts.ParameterDeclaration {
+    return isKindParameter(node.kind);
+}
+
 
 
 export function main() {
-    const filename = process.cwd() + '/node_modules/typescript/lib/typescriptServices.d.ts'
+    const filename = process.cwd() + '/node_modules/typescript/lib/typescriptServices4.d.ts'
     const source = String(fs.readFileSync(filename));
 
     const sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest);
@@ -240,7 +269,15 @@ export function main() {
 
     console.log('\n# Functions');
     const fds = getFunctionDeclarations(mbs);
-    fds.map(fd => console.log(fd.name.text));
+    fds.map(fd => {
+        console.log(fd.name.text)
+        printType(fd, '  returns ');
+        const pds = getParameters([fd]);
+        pds.forEach(pd => {
+            printText(pd.name, '  parameter ');
+            printType(pd, '    ');
+        });
+    });
 
     console.log('\n# Enums');
     const eds = getEnumDeclarations(mbs);
@@ -248,13 +285,9 @@ export function main() {
         console.log(ed.name.text);
         const ems = getEnumMembers([ed]);
         ems.forEach(em => {
-            const name = em.name;
-            if (isIdentifier(name))
-                console.log('  ' + name.text);
-            const ts = getLiteralTokens([em]);
-            ts.forEach(t => {
-                console.log('    = ' + t.text);
-            });
+            printText(em.name, '  ');
+            const lts = getLiteralTokens([em]);
+            lts.forEach(lt => printText(lt, '    = '));
         });
     });
 
@@ -281,12 +314,27 @@ export function main() {
     const vds = getVariableDeclarations(vdls);
     vds.map(vd => {
         printIdentifiers([vd], '');
-        printTypeReferences([vd], '  ');
-        printKeywords([vd], '  '); // if simple types like string, bool
+        printType(vd, '  ');
     });
 
     //printChildTypes(sf);
     console.log('done');
+}
+
+function printText(node: ts.Identifier | ts.LiteralExpression | ts.ComputedPropertyName | ts.BindingPattern, indent: string) {
+    if (isIdentifier(node))
+        console.log(indent + node.text);
+    else if (isLiteralToken(node))
+        console.log(indent + node.text);
+    else // TODO other types
+        console.log(indent + 'name kind ' + node.kind);
+}
+
+function printType(node: ts.Node, indent: string) {
+    printTypeReferences([node], indent);
+    printKeywords([node], indent); // if simple types like string, bool
+    if (hasQuestionToken([node]))
+        console.log(indent + '?');
 }
 
 function printIdentifiers(nodes: ts.Node[], indent: string) {
@@ -312,7 +360,6 @@ function printKeywords(nodes: ts.Node[], indent: string) {
             default:
                 console.log(indent + (<any>ts).SyntaxKind[kw.kind]);
         }
-        
     });
 }
 
