@@ -5,24 +5,21 @@ open System
 open System.Threading.Tasks
 open EdgeJs
 
-type Async with
-    static member Box (r:Async<'TResult>) =
-        async {
-            let! o = r
-            return box o
-        }
-
-    static member Unbox<'TResult> (r:Async<obj>) : Async<'TResult> =
-        async {
-            let! o = r
-            return unbox o
-        }
+type JsCallback = Func<obj,Task<obj>>
 
 type Edge with
     static member Func f =
-        Func<obj,Task<obj>>(fun o -> f(unbox o) |> Async.Box |> Async.StartAsTask)
+        JsCallback(fun o -> f(unbox o) |> Async.Box |> Async.StartAsTask)
 
     static member Async js =
         fun arg ->
-            let func = Edge.Func js
-            func.Invoke arg |> Async.AwaitTask
+            /// raise the InnerException instead of AggregateException if there is just one
+            try
+                let func = Edge.Func js
+                func.Invoke arg |> Async.AwaitTask
+            with e ->
+                match e with
+                | :? AggregateException as ae ->
+                    if ae.InnerExceptions.Count = 1 then raise ae.InnerException
+                    else raise ae
+                | _ -> raise e

@@ -272,7 +272,7 @@ export function main() {
     const filename = process.cwd() + '/node_modules/typescript/lib/typescriptServices.d.ts'
     const source = String(fs.readFileSync(filename));
 
-    const sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest);
+    const sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest, null);
 
     console.log('\n# Modules');
     const mds = getModulesDeclarations([sf]);
