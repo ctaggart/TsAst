@@ -1,0 +1,12 @@
+source https://www.nuget.org/api/v2
+framework: net46
+nuget Edge.js content: none
+nuget FSharp.Core
+
+group build
+source https://www.nuget.org/api/v2
+framework: net46
+nuget FAKE
+nuget SourceLink.Fake
+nuget FSharp.Formatting
+nuget RazorEngine

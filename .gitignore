@@ -2,9 +2,13 @@
 obj
 app.js
 app.js.map
-bin
+bin/
 *.ide
-node_modules
+/node_modules/
 *.dat
 *.log
 .vs/
+/edge/
+/AssemblyInfo.fs
+/paket.exe
+/packages

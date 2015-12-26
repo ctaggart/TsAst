@@ -1,0 +1,23 @@
+FRAMEWORK: NET46
+NUGET
+  remote: https://www.nuget.org/api/v2
+  specs:
+    Edge.js (4.0.0) - content: none
+    FSharp.Core (4.0.0.1)
+
+GROUP build
+FRAMEWORK: NET46
+NUGET
+  remote: https://www.nuget.org/api/v2
+  specs:
+    FAKE (4.11.3)
+    FSharp.Compiler.Service (1.4.2.3)
+    FSharp.Formatting (2.12.1)
+      FSharp.Compiler.Service (>= 1.4.2 < 1.5.0)
+      FSharpVSPowerTools.Core (>= 2.2.0 < 2.3.0)
+    FSharpVSPowerTools.Core (2.2.0)
+      FSharp.Compiler.Service (>= 1.4.2.0)
+    Microsoft.AspNet.Razor (3.2.3)
+    RazorEngine (3.7.6)
+      Microsoft.AspNet.Razor (>= 3.0.0)
+    SourceLink.Fake (1.1.0)
