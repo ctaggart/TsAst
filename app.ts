@@ -86,6 +86,10 @@ function isKindHeritageClause(kind: ts.SyntaxKind) {
   return kind === ts.SyntaxKind.HeritageClause;
 }
 
+function isKindPropertyDeclaration(kind: ts.SyntaxKind) {
+    return kind === ts.SyntaxKind.PropertyDeclaration;
+}
+
 function isKindPropertySignature(kind: ts.SyntaxKind) {
   return kind === ts.SyntaxKind.PropertySignature;
 }
@@ -200,9 +204,20 @@ function getParameters(roots: ts.Node[]) {
     return getKind<ts.ParameterDeclaration>(isKindParameter, roots);
 }
 
+function getPropertyDeclarations(roots: ts.Node[]) {
+    return getKind<ts.PropertyDeclaration>(isKindPropertyDeclaration, roots);
+}
+
+// TODO ts.PropertySignature exposed in newer version
+// https://github.com/Microsoft/TypeScript/blob/master/src/compiler/types.ts#L590
+function getPropertySignatures(roots: ts.Node[]) {
+    return getKind<ts.VariableLikeDeclaration>(isKindPropertySignature, roots);
+}
+
 function hasQuestionToken(roots: ts.Node[]) {
     return hasKind(isKindQuestionToken, roots);
 }
+
 
 
 // type guards
@@ -254,7 +269,7 @@ function isParameter(node: ts.Node): node is ts.ParameterDeclaration {
 
 
 export function main() {
-    const filename = process.cwd() + '/node_modules/typescript/lib/typescriptServices4.d.ts'
+    const filename = process.cwd() + '/node_modules/typescript/lib/typescriptServices.d.ts'
     const source = String(fs.readFileSync(filename));
 
     const sf = ts.createSourceFile(filename, source, ts.ScriptTarget.Latest);
@@ -292,19 +307,25 @@ export function main() {
     });
 
     console.log('\n# Interfaces');
-    let ids = getInterfaceDeclarations(mbs);
-    ids.map(id => {
-        console.log(id.name.text);
-        const tps = getTypeParameters([id]);
+    let ifds = getInterfaceDeclarations(mbs);
+    ifds.map(ifd => {
+        console.log(ifd.name.text);
+        const tps = getTypeParameters([ifd]);
         tps.forEach(tp => {
             console.log('  of ' + tp.name.text);
         });
 
-        const hcs = getHeritageClauses([id]);
+        const hcs = getHeritageClauses([ifd]);
         const ewtas = getExpressionWithTypeArguments(hcs);
         ewtas.forEach(ewta => {
             printIdentifiers([ewta], '  ');
             printTypeReferences([ewta], '    ');
+        });
+
+        const pss = getPropertySignatures([ifd]);
+        pss.forEach(ps => {
+            printText(ps.name, '  prop: ');
+            printType(ps, '    ');
         });
     });
 
