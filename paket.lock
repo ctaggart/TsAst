@@ -4,6 +4,7 @@ NUGET
   specs:
     Edge.js (4.0.0) - content: none
     FSharp.Core (4.0.0.1)
+    MsieJavaScriptEngine (1.6.0)
 
 GROUP build
 FRAMEWORK: NET46

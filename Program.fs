@@ -1,8 +1,8 @@
-﻿open EdgeJs
+﻿module Taser.Program
+
+open EdgeJs
 open Taser
 open System.IO
-
-let printfn format = Printf.ksprintf System.Diagnostics.Debug.WriteLine format
 
 type ScriptTarget =
     | ES3 = 0
@@ -63,10 +63,14 @@ let createSourceFile (args: createSourceFileArgs) : Async<SourceFile> =
 
 [<EntryPoint>]
 let main argv =
-    let fn = @"../../node_modules/typescript/lib/typescriptServices4.d.ts" |> Path.GetFullPath
-    printfn "loading %s" fn
-    let s = File.ReadAllText fn
-    let sf = createSourceFile { fileName = fn; sourceText = s; languageVersion = ScriptTarget.ES6; setParentNodes = None } |> Async.RunSynchronously
-//    printfn "sf %A" sf
-    printfn "sf kind: %A" (sf.kind |> Async.RunSynchronously)
+
+//    let fn = @"../../node_modules/typescript/lib/typescriptServices4.d.ts" |> Path.GetFullPath
+//    printfn "loading %s" fn
+//    let s = File.ReadAllText fn
+//    let sf = createSourceFile { fileName = fn; sourceText = s; languageVersion = ScriptTarget.ES6; setParentNodes = None } |> Async.RunSynchronously
+////    printfn "sf %A" sf
+//    printfn "sf kind: %A" (sf.kind |> Async.RunSynchronously)
+
+    Chakra.main()
+
     0

@@ -47,9 +47,11 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Print.fs" />
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Async.fs" />
     <Compile Include="Edge.fs" />
+    <Compile Include="Chakra.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <None Include="FsTsAst.fsproj.paket.references" />
@@ -82,6 +84,17 @@
       <ItemGroup>
         <Reference Include="EdgeJs">
           <HintPath>packages\Edge.js\lib\EdgeJs.dll</HintPath>
+          <Private>True</Private>
+          <Paket>True</Paket>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6'">
+      <ItemGroup>
+        <Reference Include="MsieJavaScriptEngine">
+          <HintPath>packages\MsieJavaScriptEngine\lib\net40\MsieJavaScriptEngine.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>
