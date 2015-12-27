@@ -18,13 +18,11 @@ type SourceFile(obj:JsCallback) =
                 """
                 var ts = require('typescript');
                 return function(p, cb) {
-                    cb(null, 'get kind: ' + p);
-                    //cb(null, 'get kind: ' + p(function (x){ return 'x: ' + x + 'y: ' + y; }) );
+                    cb(null, 'get kind: ' + p); // returns 'get kind: function (d, cb) { return f(d, cb, ctx); }'
+
+                    // none of these seam to work // each returns 'get kind: undefined'
                     //cb(null, 'get kind: ' + p(function (x){ return x.kind; }) );
                     //cb(null, 'get kind: ' + p(function (x, xcb){ xcb( 'x: ' + x); }) );
-                    //cb(null, 'get kind: ' + p(function (x, xcb){ xcb( 'x: ' + x); }) );
-                    //var a = p(function (x, xcb){ return xcb( 'x: ' + xcb); });
-                    //cb(null, 'get kind: ' + a);
                 }
                 """
         (fn obj) |> Async.Unbox
@@ -52,7 +50,7 @@ let createSourceFile (args: createSourceFileArgs) : Async<SourceFile> =
                 //var o = 'args: ' + p.fileName + p.languageVersion + p.setParentNodes
                 //cb(null, o);
                 var sfcb = function (err, ca) {
-                    ca(sf);
+                    ca(o);
                 };
                 cb(null, sfcb);
             }
