@@ -12,3 +12,4 @@ bin/
 /AssemblyInfo.fs
 /paket.exe
 /packages
+*.sdf

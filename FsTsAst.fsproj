@@ -47,9 +47,8 @@
     <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.fs" />
+    <Compile Include="AssemblyInfo.fs" Condition="Exists('AssemblyInfo.fs')" />
     <Compile Include="Async.fs" />
-    <Compile Include="Edge.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <None Include="FsTsAst.fsproj.paket.references" />
@@ -70,7 +69,7 @@
     </Otherwise>
   </Choose>
   <Import Project="$(FSharpTargetsPath)" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
@@ -80,8 +79,8 @@
   <Choose>
     <When Condition="$(TargetFrameworkIdentifier) == '.NETFramework' And $(TargetFrameworkVersion) == 'v4.6'">
       <ItemGroup>
-        <Reference Include="EdgeJs">
-          <HintPath>packages\Edge.js\lib\EdgeJs.dll</HintPath>
+        <Reference Include="Taser.Chakra">
+          <HintPath>packages\Taser.Chakra\lib\net46\Taser.Chakra.dll</HintPath>
           <Private>True</Private>
           <Paket>True</Paket>
         </Reference>

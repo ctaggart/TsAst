@@ -1,7 +1,7 @@
 source https://www.nuget.org/api/v2
 framework: net46
-nuget Edge.js content: none
 nuget FSharp.Core
+nuget Taser.Chakra -prerelease
 
 group build
 source https://www.nuget.org/api/v2

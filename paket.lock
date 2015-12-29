@@ -2,15 +2,15 @@ FRAMEWORK: NET46
 NUGET
   remote: https://www.nuget.org/api/v2
   specs:
-    Edge.js (4.0.0) - content: none
     FSharp.Core (4.0.0.1)
+    Taser.Chakra (0.0.0-a1512282320)
 
 GROUP build
 FRAMEWORK: NET46
 NUGET
   remote: https://www.nuget.org/api/v2
   specs:
-    FAKE (4.11.3)
+    FAKE (4.12.0)
     FSharp.Compiler.Service (1.4.2.3)
     FSharp.Formatting (2.12.1)
       FSharp.Compiler.Service (>= 1.4.2 < 1.5.0)
