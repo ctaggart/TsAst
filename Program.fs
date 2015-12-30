@@ -74,14 +74,16 @@ let getValueType v =
 let printValueType v =
     printfn "ValueType: %A" (getValueType v)
 
-// https://github.com/ctaggart/MsieJavaScriptEngine/commit/d345da3325da0c0eef563d5895e030fe7d4b3e1e
-let passJsRefToFunction() =
-//    let ch = ChakraHost()
-//    let msg = ch.init()
-//    printfn "Chakra init: %s" msg // TODO throw if not "NoError"
-//    let rv = ch.runScript "'Hello' + ' World'"
-//    printfn "rv: %s" rv
+let getString v =
+    let ec, sr = Native.JsConvertValueToString v
+    Native.ThrowIfError ec
+    let ec, sp, _ = Native.JsStringToPointer sr
+    Native.ThrowIfError ec
+    Marshal.PtrToStringUni sp
 
+let passJsRefToFunction() =
+
+    // setup
     let ec, rt = Native.JsCreateRuntime(JavaScriptRuntimeAttributes.None, null)
     Native.ThrowIfError ec
 
@@ -95,63 +97,90 @@ let passJsRefToFunction() =
     Native.ThrowIfError ec
 
     // Hello World
-
     let sc = JavaScriptSourceContext.FromIntPtr IntPtr.Zero
-//    let sc = JavaScriptSourceContext.FromIntPtr (IntPtr 1)
     let ec, v = Native.JsRunScript("'Hello' + ' World'", sc, String.Empty)
     Native.ThrowIfError ec
     printValueType v // String
+    printfn "string: %s" (getString v)
 
-    let ec, sr = Native.JsConvertValueToString v
+    // create a function
+    let ec, createPerson = Native.JsRunScript("(function(){ return { name: 'Cameron', age: 36 } });", sc, String.Empty )
     Native.ThrowIfError ec
-    let ec, sp, n = Native.JsStringToPointer sr
+    printValueType v // Function
+
+    // call that function
+    let ec, person = Native.JsCallFunction(createPerson, [|createPerson|], uint16 1)
     Native.ThrowIfError ec
-    let s = Marshal.PtrToStringUni sp
-    printfn "string: %s, length: %d" s n
+    printValueType person // Object
 
-    // TypeScript Services createNode
+    // get a property of the returned object
+    let pidname = JavaScriptPropertyId.FromString "name"
+    let ec, name = Native.JsGetProperty(person, pidname)
+    Native.ThrowIfError ec
+    printValueType name // String
+    printfn "name: %s" (getString name)
 
+    // get the number of properties of the object
+    let ec, names = Native.JsGetOwnPropertyNames person
+    Native.ThrowIfError ec
+    printValueType names // Array
+    let pidlength = JavaScriptPropertyId.FromString "length"
+    let ec, plength = Native.JsGetProperty(names, pidlength)
+    Native.ThrowIfError ec
+    printValueType plength // Number
+    let ec, d = Native.JsNumberToDouble plength
+    printfn "length: %d" (int d)
+
+    // TypeScript Services
+
+    // load the js
     use sr = new StreamReader(@"C:\ts\TsAst\node_modules\typescript\lib\typescriptServices.js")
     let js = sr.ReadToEnd()
     let ec, v = Native.JsRunScript(js, sc, String.Empty)
     Native.ThrowIfError ec
     printValueType v
 
-//    let ec, v = Native.JsCallFunction(JavaScriptValue.FromString "ts.createNode", [| JavaScriptValue.FromInt32 1 |], uint16 1)
-//    Native.ThrowIfError ec // InvalidArgument
-//    printValueType v
-
-    let ec, v = Native.JsRunScript("ts.createNode", sc, String.Empty)
+    // get a function reference
+    let ec, createNode = Native.JsRunScript("ts.createNode", sc, String.Empty)
     Native.ThrowIfError ec
-    printValueType v // Function
+    printValueType createNode // Function
+    printfn "createNode: "
 
-    let ec, v = Native.JsCallFunction(v, [| JavaScriptValue.FromInt32 1 |], uint16 1)
+    // calling the function
+    let ec, node = Native.JsCallFunction(createNode, [| createNode; JavaScriptValue.FromInt32 1 |], uint16 2)
     Native.ThrowIfError ec
-    printValueType v // Object
+    printValueType node
+    printfn "node: "
 
-//    let ec, v = Native.JsGetProperty(v, JavaScriptPropertyId.FromString "kind")
-//    Native.ThrowIfError ec
-//    printValueType v // Undefined
-
-    let ec, names = Native.JsGetOwnPropertyNames v
+    // access a property on the returned object
+    let pidkind = JavaScriptPropertyId.FromString "kind"
+    let ec, pkind = Native.JsGetProperty(node, pidkind)
     Native.ThrowIfError ec
-    printValueType names // Array
-    // TODO
-//    printfn "names: %A" names
+    printValueType pkind
+    printfn "  kind: %s" (getString pkind) // works even with it beign a number :)
 
+    // pass in the object to a custom function
+    let ec, getKind = Native.JsRunScript("(function(x){ return x.kind; })", sc, String.Empty)
+    Native.ThrowIfError ec
+    printValueType getKind // Function
+    let ec, kind = Native.JsCallFunction(getKind, [| getKind; node |], uint16 2)
+    Native.ThrowIfError ec
+    printValueType kind // Number
+    printfn "kind: %s" (getString kind)
 
-
-//    match vt with
-//    | JavaScriptValueType.
     ()
 
 [<EntryPoint>]
 let main argv =
-//    let fn = @"../../node_modules/typescript/lib/typescriptServices4.d.ts" |> Path.GetFullPath
-//    printfn "loading %s" fn
-//    let s = File.ReadAllText fn
-//    let sf = createSourceFile { fileName = fn; sourceText = s; languageVersion = ScriptTarget.ES6; setParentNodes = None } |> Async.RunSynchronously
-////    printfn "sf %A" sf
-//    printfn "sf kind: %A" (sf.kind |> Async.RunSynchronously)
+
+    // the TypeScript to translate
+
+    //    let fn = @"../../node_modules/typescript/lib/typescriptServices4.d.ts" |> Path.GetFullPath
+    //    printfn "loading %s" fn
+    //    let s = File.ReadAllText fn
+    //    let sf = createSourceFile { fileName = fn; sourceText = s; languageVersion = ScriptTarget.ES6; setParentNodes = None } |> Async.RunSynchronously
+    ////    printfn "sf %A" sf
+    //    printfn "sf kind: %A" (sf.kind |> Async.RunSynchronously)
+
     passJsRefToFunction()
     0
