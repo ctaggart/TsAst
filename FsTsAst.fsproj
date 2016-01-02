@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.fs" Condition="Exists('AssemblyInfo.fs')" />
     <Compile Include="Async.fs" />
+    <Compile Include="Chakra.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
     <None Include="FsTsAst.fsproj.paket.references" />

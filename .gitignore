@@ -13,3 +13,4 @@ bin/
 /paket.exe
 /packages
 *.sdf
+*.opendb
