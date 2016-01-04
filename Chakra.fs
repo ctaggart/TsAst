@@ -60,3 +60,8 @@ type JavaScriptValue with
         match v with
         | None -> JavaScriptValue.Undefined
         | Some b -> JavaScriptValue.FromBoolean b
+
+    static member FromObjectOption (v: obj option) =
+        match v with
+        | None -> JavaScriptValue.Undefined
+        | Some o -> JavaScriptValue.FromObject o
