@@ -1,7 +1,4 @@
-﻿///<reference path='node_modules/typescript/lib/typescript.d.ts' />
-///<reference path='node.d.ts' />
-
-import ts = require('typescript');
+﻿import ts = require('typescript');
 import fs = require('fs');
 import path = require('path');
 
