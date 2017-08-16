@@ -1,0 +1,1 @@
+$env:path = "$pwd\node_modules\.bin;$env:path"
