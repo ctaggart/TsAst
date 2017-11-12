@@ -1,7 +1,7 @@
 *.suo
 obj
-app.js
-app.js.map
+*.js
+*.js.map
 bin
 *.ide
 node_modules
