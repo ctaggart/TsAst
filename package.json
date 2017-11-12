@@ -5,6 +5,6 @@
   "main": "app.js",
   "dependencies": {
     "@types/node": "^8.0.51",
-    "typescript": "^2.6.1"
+    "typescript": "^2.7.0-dev.20171112"
   }
 }

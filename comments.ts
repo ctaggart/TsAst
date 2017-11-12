@@ -5,7 +5,7 @@
 import * as ts from "typescript";
 import * as fs from "fs";
 
-let tsPath = "node_modules/typescript/lib/typescript.d.ts"
+const tsPath = "node_modules/typescript/lib/typescript.d.ts"
 const options: ts.CompilerOptions = { target: ts.ScriptTarget.ES2015 }
 const host = ts.createCompilerHost(options, true);
 const program = ts.createProgram([tsPath], options, host)
@@ -27,6 +27,7 @@ ts.forEachChild(sourceFile, visitNode);
 
 function printFunctionComments(fd: ts.FunctionDeclaration){
     const symbol = checker.getSymbolAtLocation(fd.name)
-    const comments = ts.displayPartsToString(symbol.getDocumentationComment())
+    // const comments = ts.displayPartsToString(symbol.getDocumentationComment()) // 2.6
+    const comments = ts.displayPartsToString(symbol.getDocumentationComment(checker)) // 2.7
     console.log ("\n" + fd.name.getText() + "comments\n"+ comments)
 }
