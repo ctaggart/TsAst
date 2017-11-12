@@ -4,7 +4,7 @@
   "description": "TsAst",
   "main": "app.js",
   "dependencies": {
-    "@types/node": "^8.0.22",
-    "typescript": "^2.4.2"
+    "@types/node": "^8.0.51",
+    "typescript": "^2.6.1"
   }
 }
