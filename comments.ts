@@ -26,8 +26,7 @@ function visitNode(node: ts.Node){
 ts.forEachChild(sourceFile, visitNode);
 
 function printFunctionComments(fd: ts.FunctionDeclaration){
-    const symbol = checker.getSymbolAtLocation(fd.name)
-    // const comments = ts.displayPartsToString(symbol.getDocumentationComment()) // 2.6
-    const comments = ts.displayPartsToString(symbol.getDocumentationComment(checker)) // 2.7
-    console.log ("\n" + fd.name.getText() + "comments\n"+ comments)
+    const signature = checker.getSignatureFromDeclaration(fd);
+    const comments = ts.displayPartsToString(signature.getDocumentationComment(checker));
+    console.log ("\n" + fd.name.getText() + "\n"+ comments)
 }
