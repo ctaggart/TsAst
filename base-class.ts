@@ -6,6 +6,7 @@
 
 import * as ts from "typescript";
 import * as fs from "fs";
+import {isTypeReference, isClassDeclaration} from "tsutils";
 
 const tsPath = "node_modules/@types/mocha/index.d.ts"
 const options: ts.CompilerOptions = { target: ts.ScriptTarget.ES2015 }
@@ -29,16 +30,38 @@ function visitNode(node: ts.Node){
 
 ts.forEachChild(sourceFile, visitNode);
 
+function getFullTypeName (tp: ts.Type){
+    if(tp.symbol){
+        return checker.getFullyQualifiedName(tp.symbol)
+    } else {
+        return ""
+    }
+}
+
+function getFullNodeName (nd: ts.Node){
+    const tp =checker.getTypeAtLocation(nd)
+    return getFullTypeName(tp)
+}
+
 function printBaseClass(cd: ts.ClassDeclaration){
     // console.log(cd)
     for(const hc of cd.heritageClauses) {
         console.log("heritage clause: " + hc.getText())
+
+        console.log("hc name " + getFullNodeName(hc))
+
         for(const hctp of hc.types){
-            // hctp is a ts.ExpressionWithTypeArguments
+            let tp = checker.getTypeFromTypeNode(hctp)
+            console.log(getFullTypeName(tp))
 
-            const ct = checker.getContextualType(hctp.expression)
-            console.log("contextual type: " + ct) // undefined
+            if (isTypeReference(tp)) {
+                const targetNode = checker.typeToTypeNode(tp.target)
+                if(isClassDeclaration(targetNode)){
+                    console.log("found it")
+                } else {
+                    console.log("targetNode is not a class " + targetNode.kind) // 159 TypeReference
+                }
+            }
         }
-
     }
 }

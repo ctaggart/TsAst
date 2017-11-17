@@ -27,6 +27,6 @@ ts.forEachChild(sourceFile, visitNode);
 
 function printFunctionComments(fd: ts.FunctionDeclaration){
     const signature = checker.getSignatureFromDeclaration(fd);
-    const comments = ts.displayPartsToString(signature.getDocumentationComment(checker));
-    console.log ("\n" + fd.name.getText() + "\n"+ comments)
+    // const comments = ts.displayPartsToString(signature.getDocumentationComment(checker));
+    // console.log ("\n" + fd.name.getText() + "\n"+ comments)
 }
