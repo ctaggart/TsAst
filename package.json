@@ -5,6 +5,9 @@
   "main": "app.js",
   "dependencies": {
     "@types/node": "^8.0.51",
-    "typescript": "^2.7.0-dev.20171112"
+    "typescript": "^2.7.0-dev.20171117"
+  },
+  "devDependencies": {
+    "@types/mocha": "^2.2.44"
   }
 }

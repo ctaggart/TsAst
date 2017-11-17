@@ -2,10 +2,14 @@
 # yarn lockfile v1
 
 
+"@types/mocha@^2.2.44":
+  version "2.2.44"
+  resolved "https://registry.yarnpkg.com/@types/mocha/-/mocha-2.2.44.tgz#1d4a798e53f35212fd5ad4d04050620171cd5b5e"
+
 "@types/node@^8.0.51":
   version "8.0.51"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-8.0.51.tgz#b31d716fb8d58eeb95c068a039b9b6292817d5fb"
 
-typescript@^2.7.0-dev.20171112:
-  version "2.7.0-dev.20171112"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.0-dev.20171112.tgz#546557c10d2feaac7b94323685f0af38f7aa0832"
+typescript@^2.7.0-dev.20171117:
+  version "2.7.0-dev.20171117"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.7.0-dev.20171117.tgz#bc4527c388386882980c548672452d1b00e26616"
